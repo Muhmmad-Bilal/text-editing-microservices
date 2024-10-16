@@ -1,0 +1,29 @@
+server:
+  port: 8084
+
+spring:
+  cloud:
+      gateway:
+        routes:
+          - id: user-service
+            uri:  lb://USER-SERVICE
+            predicates:
+              - Path=/api/**
+        discovery:
+          locator:
+            enabled: false
+            lower-case-service-id: false
+#            filters:
+#              - AuthenticationFilter
+
+
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+
+
