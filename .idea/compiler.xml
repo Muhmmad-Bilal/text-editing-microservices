@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="document_microservice" />
+        <module name="tracking" />
         <module name="eureka_module_service" />
         <module name="user_microservice_module" />
         <module name="api_gateway_microservice" />
@@ -19,6 +20,7 @@
       <module name="api_gateway_microservice" options="-parameters" />
       <module name="document_microservice" options="-parameters" />
       <module name="eureka_module_service" options="-parameters" />
+      <module name="tracking" options="-parameters" />
       <module name="user_microservice_module" options="-parameters" />
     </option>
   </component>

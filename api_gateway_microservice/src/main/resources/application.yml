@@ -3,27 +3,35 @@ server:
 
 spring:
   cloud:
-      gateway:
-        routes:
-          - id: user-service
-            uri:  lb://USER-SERVICE
-            predicates:
-              - Path=/api/**
-        discovery:
-          locator:
-            enabled: false
-            lower-case-service-id: false
-#            filters:
-#              - AuthenticationFilter
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/**
+          filters:
+            - name: AuthenticationFilter
 
+        - id: document-tracking
+          uri: lb://DOCUMENT-TRACKING
+          predicates:
+            - Path=/document/**
+          filters:
+            - name: AuthenticationFilter
+
+        - id: version_tracking
+          uri: lb://VERSION-TRACKING
+          predicates:
+            - Path=/document/**
+          filters:
+            - name: AuthenticationFilter
+
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: false
 
 eureka:
-  client:
-    service-url:
-      default-zone: http://localhost:8761/eureka
-
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
-
-
+      client:
+          service-url:
+            default-zone: http://localhost:8761/eureka
