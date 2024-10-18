@@ -1,5 +1,7 @@
 package com.document.editing.service.serviceImpl;
 
+import com.document.editing.dto.requestdto.FileRequestDTO;
+import com.document.editing.dto.requestdto.RevertVersionRequestDTO;
 import com.document.editing.dto.responsedto.DocumentVersionResponseDTO;
 import com.document.editing.entity.DocumentEntity;
 import com.document.editing.mapper.DocumentMapper;
@@ -10,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.sql.Timestamp;
@@ -19,8 +23,8 @@ import java.util.Map;
 
 @Service
 public class FileReadingServiceImpl implements FileReadingService {
-    private final String directoryPath = "D:/"; // Directory to watch
-    private final String fileName = "test.txt"; // File to monitor for changes
+//    private final String directoryPath = "D:/"; // Directory to watch
+//    private final String fileName = "test.txt"; // File to monitor for changes
 
     @Autowired
     private RestTemplate restTemplate;
@@ -32,15 +36,16 @@ public class FileReadingServiceImpl implements FileReadingService {
    private DocumentRepository documentRepository;
 
     @Override
-    public void startWatching() {
-
+    public void startWatching(FileRequestDTO fileRequestDTO) {
         try {
-
+            String driveName=fileRequestDTO.getDrive()+":/";
+            String fileName=fileRequestDTO.getFileName();
+            File file=new File(driveName+fileName);
+            Desktop desktop=  Desktop.getDesktop();
+            desktop.open(file);
             WatchService watchService = FileSystems.getDefault().newWatchService();
-            Path path = Paths.get(directoryPath);
+            Path path = Paths.get(fileRequestDTO.getDrive()+":/");
             path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
-
-            System.out.println("Watching directory: " + directoryPath);
             while (true) {
                 WatchKey key;
                 try {
@@ -49,57 +54,48 @@ public class FileReadingServiceImpl implements FileReadingService {
                     Thread.currentThread().interrupt();
                     return;
                 }
-
                 for (WatchEvent<?> event : key.pollEvents()) {
                     WatchEvent.Kind<?> kind = event.kind();
 
                     // We only care about modify events
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
                         Path changed = (Path) event.context();
-                        if (changed.endsWith(fileName)) {
-                            System.out.println(fileName + " has been modified.");
-                            readFileContent();
+                        if (changed.endsWith(fileRequestDTO.getFileName())) {
+                            readFileContent(driveName,fileName);
                         }
                     }
                 }
-
                 boolean valid = key.reset();
                 if (!valid) {
                     break;
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-
     @Override
-    public void revertToVersion(Long documentId, int versionNumber, Long modifiedBy) {
+    public void revertToVersion(RevertVersionRequestDTO revertVersionRequestDTO) {
         ResponseEntity<DocumentVersionResponseDTO> response = restTemplate.getForEntity(
-                versionServiceUrl + "?documentId=" + documentId + "&versionNumber=" + versionNumber,
+                versionServiceUrl + "?documentId=" + revertVersionRequestDTO.getDocumentId() + "&versionNumber=" + revertVersionRequestDTO.getVersionNumber(),
                 DocumentVersionResponseDTO.class);
-
         if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
             throw new RuntimeException("Failed to retrieve version");
         }
         DocumentVersionResponseDTO documentVersion = response.getBody();
-
-        DocumentEntity document = documentRepository.findById(documentId)
+        DocumentEntity document = documentRepository.findById(revertVersionRequestDTO.getDocumentId())
                 .orElseThrow(() -> new RuntimeException("Document not found"));
-
         document.setContent(documentVersion.getContent());
-        document.setLastUpdateBy(modifiedBy);
+        document.setLastUpdateBy(revertVersionRequestDTO.getModifiedBy());
         document.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
         documentRepository.save(document);
-        saveDocumentVersion(documentVersion.getContent(), documentId, modifiedBy);
+        saveDocumentVersion(documentVersion.getContent(), revertVersionRequestDTO.getDocumentId(), revertVersionRequestDTO.getModifiedBy());
 
     }
 
-    private void readFileContent() {
+    private void readFileContent(String driveName, String fileName) {
         try {
-            Path filePath = Paths.get(directoryPath, fileName);
+            Path filePath = Paths.get(driveName, fileName);
             String content = Files.readString(filePath);
 
          DocumentEntity documentEntity= documentRepository.save(documentMapper.savedocument(content, 4L));

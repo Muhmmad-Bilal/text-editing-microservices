@@ -8,5 +8,6 @@ import java.util.Optional;
 public interface VersionRepository extends JpaRepository<VersionEntity,Long> {
     Optional<Integer> findMaxVersionNumberByDocumentId(Long documentId);
     Optional<Integer> findLatestVersionNumberByDocumentId(Long documentId);
+   VersionEntity findByDocumentIdAndVersionNumber(Long documentId, int versionNumber);
 
 }

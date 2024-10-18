@@ -1,7 +1,10 @@
 package com.document.editing.service;
 
+import com.document.editing.dto.requestdto.FileRequestDTO;
+import com.document.editing.dto.requestdto.RevertVersionRequestDTO;
+
 public interface FileReadingService {
-    public void startWatching() ;
-    public void revertToVersion(Long documentId, int versionNumber, Long modifiedBy);
+    public void startWatching(FileRequestDTO fileRequestDTO) ;
+    public void revertToVersion(RevertVersionRequestDTO revertVersionRequestDTO);
 
 }
