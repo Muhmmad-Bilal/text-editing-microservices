@@ -1,13 +1,11 @@
 package com.version.tracking.controller;
 
+import com.version.tracking.entity.VersionEntity;
 import com.version.tracking.service.VersionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -30,4 +28,11 @@ public class VersionController {
         }
     }
 
+    @GetMapping("/retrieve")
+    public ResponseEntity<VersionEntity> getVersion(
+            @RequestParam Long documentId,
+            @RequestParam int versionNumber) {
+
+        return ResponseEntity.ok(documentVersionService.getVersion(documentId,versionNumber));
+    }
 }
