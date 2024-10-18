@@ -1,10 +1,9 @@
 package com.user.authentication.user_service.controller;
 
 import com.user.authentication.user_service.dto.request.AuthenticationRequestDTO;
-import com.user.authentication.user_service.dto.request.UserRequestDTO;
 import com.user.authentication.user_service.dto.response.BaseResponse;
 import com.user.authentication.user_service.dto.response.BaseResponseDTO;
-import com.user.authentication.user_service.exception.ESException;
+import com.user.authentication.user_service.exception.GlobleException;
 import com.user.authentication.user_service.service.AuthenticationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class AuthenticationController extends BaseResponse {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<BaseResponseDTO> login(@RequestBody AuthenticationRequestDTO model) throws ESException {
+    public ResponseEntity<BaseResponseDTO> login(@RequestBody AuthenticationRequestDTO model) throws GlobleException {
         System.out.println("Hit");
         return ResponseEntity.ok(response(HttpStatus.CREATED,HttpStatus.CREATED.getReasonPhrase(),authenticationService.authenticate(model)));
     }

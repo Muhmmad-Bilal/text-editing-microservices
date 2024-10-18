@@ -1,10 +1,6 @@
 package com.user.authentication.user_service.config;
 
-import com.user.authentication.user_service.exception.ESException;
-import com.user.authentication.user_service.model.CustomUserDetails;
-import com.user.authentication.user_service.repository.UserRepository;
 import com.user.authentication.user_service.security.CustomUserDetailService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

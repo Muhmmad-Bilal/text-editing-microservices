@@ -2,7 +2,7 @@ package com.user.authentication.user_service.service.serviceImpl;
 
 import com.user.authentication.user_service.dto.request.AuthenticationRequestDTO;
 import com.user.authentication.user_service.dto.response.AuthenticationResponseDTO;
-import com.user.authentication.user_service.exception.ESException;
+import com.user.authentication.user_service.exception.GlobleException;
 import com.user.authentication.user_service.security.Jwtfactory;
 import com.user.authentication.user_service.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class AuthenticationSeriveImpl  implements AuthenticationService {
     }
 
     @Override
-    public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO model) throws ESException {
+    public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO model) throws GlobleException {
        try{
         final Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(model.getEmailAddress(), model.getPassword())
@@ -45,7 +45,7 @@ public class AuthenticationSeriveImpl  implements AuthenticationService {
     }
 
     @Override
-    public void logout() throws ESException {
+    public void logout() throws GlobleException {
 
     }
 
