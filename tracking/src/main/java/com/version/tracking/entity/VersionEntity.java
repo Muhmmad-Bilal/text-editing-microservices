@@ -20,4 +20,6 @@ public class VersionEntity {
     private LocalDateTime timestamp;
     @Column(nullable = false)
     private Long userId;
+
+    private  String path;
 }

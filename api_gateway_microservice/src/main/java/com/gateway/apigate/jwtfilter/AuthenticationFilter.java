@@ -35,13 +35,11 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     authHeader = authHeader.substring(7);
                 }
                 try {
-//                    //REST call to AUTH service
-//                  template.getForObject("http://USER-SERVICE//api/auth/login/?token" + authHeader, String.class);
+   //              template.getForObject("http://USER-SERVICE//api/auth/login/?token" + authHeader, String.class);
                     jwtUtil.validateToken(authHeader);
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println("invalid access...!");
                     throw new RuntimeException("un authorized access to application");
                 }
             }

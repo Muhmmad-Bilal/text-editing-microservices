@@ -30,4 +30,7 @@ public class DocumentEntity {
 
     @Column(name = "modified_by", insertable = false)
     private Long lastUpdateBy;
+
+    @Column(name = "path",insertable = false)
+    private  String path;
 }

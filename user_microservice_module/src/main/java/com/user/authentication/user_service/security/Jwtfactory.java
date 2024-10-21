@@ -2,6 +2,7 @@ package com.user.authentication.user_service.security;
 
 import com.user.authentication.user_service.dto.request.AuthenticationRequestDTO;
 import com.user.authentication.user_service.dto.response.AuthenticationResponseDTO;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -14,6 +15,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Slf4j
 @Component
@@ -47,5 +49,21 @@ public class Jwtfactory {
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+    public String getUsernameFromToken(String token) {
+        return getClaimFromToken(token, Claims::getSubject);
+    }
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = getAllClaimsFromToken(token);
+
+        return claimsResolver.apply(claims);
+    }
+    private Claims getAllClaimsFromToken(String token) {
+        Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }

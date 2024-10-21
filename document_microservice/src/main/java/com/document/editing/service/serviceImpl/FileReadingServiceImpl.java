@@ -40,9 +40,10 @@ public class FileReadingServiceImpl implements FileReadingService {
         try {
             String driveName=fileRequestDTO.getDrive()+":/";
             String fileName=fileRequestDTO.getFileName();
-            File file=new File(driveName+fileName);
-            Desktop desktop=  Desktop.getDesktop();
-            desktop.open(file);
+            String path1=driveName+fileName;
+            System.out.println(path1);
+            ProcessBuilder pb = new ProcessBuilder("Notepad.exe", path1);
+            pb.start();
             WatchService watchService = FileSystems.getDefault().newWatchService();
             Path path = Paths.get(fileRequestDTO.getDrive()+":/");
             path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
@@ -75,7 +76,7 @@ public class FileReadingServiceImpl implements FileReadingService {
         }
     }
     @Override
-    public void revertToVersion(RevertVersionRequestDTO revertVersionRequestDTO) {
+    public String revertToVersion(RevertVersionRequestDTO revertVersionRequestDTO) {
         ResponseEntity<DocumentVersionResponseDTO> response = restTemplate.getForEntity(
                 versionServiceUrl + "?documentId=" + revertVersionRequestDTO.getDocumentId() + "&versionNumber=" + revertVersionRequestDTO.getVersionNumber(),
                 DocumentVersionResponseDTO.class);
@@ -88,31 +89,30 @@ public class FileReadingServiceImpl implements FileReadingService {
         document.setContent(documentVersion.getContent());
         document.setLastUpdateBy(revertVersionRequestDTO.getModifiedBy());
         document.setLastUpdate(Timestamp.valueOf(LocalDateTime.now()));
-        documentRepository.save(document);
-        saveDocumentVersion(documentVersion.getContent(), revertVersionRequestDTO.getDocumentId(), revertVersionRequestDTO.getModifiedBy());
-
+        DocumentEntity documentEntity=  documentRepository.save(document);
+        return "Revert successfully";  //saveDocumentVersion(documentVersion.getContent(), revertVersionRequestDTO.getDocumentId(), revertVersionRequestDTO.getModifiedBy());
     }
 
-    private void readFileContent(String driveName, String fileName) {
+    private void readFileContent(String driveName, String fileName)  {
         try {
             Path filePath = Paths.get(driveName, fileName);
             String content = Files.readString(filePath);
-
-         DocumentEntity documentEntity= documentRepository.save(documentMapper.savedocument(content, 4L));
-            saveDocumentVersion(content,documentEntity.getId(),documentEntity.getUserId());
+         DocumentEntity documentEntity= documentRepository.save(documentMapper.savedocument(content, 4L,filePath.toString()));
+            saveDocumentVersion(content,documentEntity.getId(),documentEntity.getUserId(),filePath.toString());
             System.out.println("File content:\n" + content);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    private void saveDocumentVersion(String content, Long documentId, Long modifiedBy) {
+    private String saveDocumentVersion(String content, Long documentId, Long modifiedBy,String path) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "http://localhost:8082/version/save";
         Map<String, Object> request = new HashMap<>();
         request.put("content", content);
         request.put("documentId", documentId);
         request.put("modifiedBy", modifiedBy);
-        restTemplate.postForObject(url, request, Void.class);
+        request.put("path",path);
+        return restTemplate.postForObject(url, request, String.class);
     }
 
     }

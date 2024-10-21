@@ -5,6 +5,6 @@ import com.document.editing.dto.requestdto.RevertVersionRequestDTO;
 
 public interface FileReadingService {
     public void startWatching(FileRequestDTO fileRequestDTO) ;
-    public void revertToVersion(RevertVersionRequestDTO revertVersionRequestDTO);
+    public String revertToVersion(RevertVersionRequestDTO revertVersionRequestDTO);
 
 }

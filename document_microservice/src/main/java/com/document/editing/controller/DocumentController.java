@@ -31,10 +31,9 @@ public class DocumentController {
            fileReadingService.startWatching(fileRequestDTO);
     }
     @PostMapping(value = "/revert-version")
-    public void revertVersion(@RequestBody RevertVersionRequestDTO revertVersionRequestDTO)
+    public ResponseEntity<String> revertVersion(@RequestBody RevertVersionRequestDTO revertVersionRequestDTO)
     {
-        fileReadingService.revertToVersion(revertVersionRequestDTO);
+       return ResponseEntity.ok(fileReadingService.revertToVersion(revertVersionRequestDTO));
     }
-
 
 }

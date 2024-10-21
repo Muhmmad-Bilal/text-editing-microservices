@@ -9,12 +9,14 @@ import org.springframework.stereotype.Component;
 public class DocumentMapper {
     @Autowired
     private ModelMapper modelMapper;
-    public DocumentEntity savedocument(String content, Long userId)
+    public DocumentEntity savedocument(String content, Long userId,String path)
     {
         DocumentEntity documentEntity=new DocumentEntity();
         documentEntity.setContent(content);
         documentEntity.setStatus(1);
         documentEntity.setUserId(userId);
+        documentEntity.setPath(path);
+
         return  documentEntity;
 
     }
